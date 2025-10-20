@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   // 'provider' | 'applicant'
+  createdAt DateTime @default(now())
+
+  jobs        Job[]
+  applications Application[]
+  wallet       Wallet?
+}
+
+model Job {
+  id          Int      @id @default(autoincrement())
+  providerId  Int
+  title       String
+  description String
+  videoLink   String
+  reward      Float
+  createdAt   DateTime @default(now())
+  
+  provider    User      @relation(fields: [providerId], references: [id])
+  applications Application[]
+}
+
+model Application {
+  id                Int      @id @default(autoincrement())
+  jobId             Int
+  applicantId       Int
+  contributionScore Float?
+  createdAt         DateTime @default(now())
+
+  job        Job   @relation(fields: [jobId], references: [id])
+  applicant  User  @relation(fields: [applicantId], references: [id])
+}
+
+model Wallet {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  balance  Float    @default(0)
+  user     User     @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  walletId    Int
+  amount      Float
+  type        String   // 'credit' | 'debit'
+  description String
+  createdAt   DateTime @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+}
