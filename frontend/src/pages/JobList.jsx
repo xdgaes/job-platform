@@ -12,12 +12,23 @@ export default function JobList() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Available Jobs</h2>
-      <div className="grid gap-4">
-        {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
-        ))}
+    <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-gray-900 mb-6">
+          🎯 Available <span className="text-blue-600">Jobs</span>
+        </h2>
+
+        {jobs.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            No jobs available right now.
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
