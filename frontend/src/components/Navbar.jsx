@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
 
 function Navbar({ darkMode, setDarkMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // cek: kalau menu terbuka & klik di luar menu
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   return (
     <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 shadow-sm relative transition-colors duration-300">
@@ -66,55 +84,58 @@ function Navbar({ darkMode, setDarkMode }) {
           </button>
 
           {/* Menu Icon */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+            </button>
 
-          {/* Dropdown Menu */}
-          {menuOpen && (
-            <div className="absolute right-0 top-12 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50 transition-colors duration-300">
-              <Link
-                to="/profile"
-                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                Profile
-              </Link>
-              <Link
-                to="/support"
-                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                Support
-              </Link>
-              <Link
-                to="/faq"
-                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                FAQ
-              </Link>
-
-              {/* Dark Mode Toggle */}
-              <div className="px-4 py-2 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 mt-2">
-                <span className="text-sm text-gray-600 dark:text-gray-300">
-                  Dark Mode
-                </span>
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className={`w-10 h-5 flex items-center rounded-full p-1 transition-all ${
-                    darkMode ? "bg-indigo-600" : "bg-gray-300"
-                  }`}
+            {/* Dropdown */}
+            {menuOpen && (
+              <div className="absolute right-0 top-10 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50 transition-all duration-200">
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <div
-                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-all ${
-                      darkMode ? "translate-x-5" : "translate-x-0"
+                  Profile
+                </Link>
+                <Link
+                  to="/support"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Support
+                </Link>
+                <Link
+                  to="/faq"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  FAQ
+                </Link>
+
+                {/* Dark Mode Switch */}
+                <div className="px-4 py-2 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 mt-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Dark Mode</span>
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`w-10 h-5 flex items-center rounded-full p-1 transition-all ${
+                      darkMode ? "bg-indigo-600" : "bg-gray-300"
                     }`}
-                  ></div>
-                </button>
+                  >
+                    <div
+                      className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-all ${
+                        darkMode ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    ></div>
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </nav>
