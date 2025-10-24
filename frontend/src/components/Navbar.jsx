@@ -7,7 +7,8 @@ function Navbar({ darkMode, setDarkMode }) {
 
   return (
     <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 shadow-sm relative transition-colors duration-300">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+      <div className="flex items-center justify-between px-6 py-3"> 
+        {/* max-w-7xl mx-auto */}
         {/* LEFT SECTION */}
         <div className="flex items-center gap-8">
           {/* Logo */}

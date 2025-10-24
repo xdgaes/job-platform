@@ -47,7 +47,8 @@ function App() {
           }`}
         >
           {/* Navbar global */}
-          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+          {/* {darkMode={darkMode} setDarkMode={setDarkMode} } */}
+          <Navbar />
 
           {/* Isi halaman */}
           <main className="flex-grow">

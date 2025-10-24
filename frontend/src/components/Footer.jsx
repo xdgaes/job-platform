@@ -2,15 +2,25 @@ import React from "react";
 
 function Footer() {
   return (
-    <footer className="flex flex-col items-center justify-center py-8 bg-white border-t border-gray-100 mt-10">
-      <div className="flex items-center gap-4 mb-4">
-        <img src="/logo.svg" alt="Logo" className="h-8" />
-        <p className="text-sm text-gray-600">© 2025 CLIPPA</p>
-      </div>
-      <div className="flex gap-6 text-sm text-gray-500">
-        <a href="#">Contact Us</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
+    <footer className="bg-white py-6 mt-auto shadow-inner">
+      <div className="w-full px-6 flex flex-col md:flex-row justify-between items-center">
+        {/* Kiri */}
+        <div className="text-indigo-700 font-bold text-lg self-start md:self-center">
+          © 2025 CLIPPA
+        </div>
+
+        {/* Kanan */}
+        <div className="flex gap-6 mt-4 md:mt-0">
+          <a href="#" className="text-gray-600 hover:text-indigo-700">
+            Contact Us
+          </a>
+          <a href="#" className="text-gray-600 hover:text-indigo-700">
+            Terms
+          </a>
+          <a href="#" className="text-gray-600 hover:text-indigo-700">
+            Privacy Policy
+          </a>
+        </div>
       </div>
     </footer>
   );

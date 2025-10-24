@@ -191,24 +191,6 @@ const Home = () => {
           </button>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-white py-6 mt-auto shadow-inner">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-indigo-700 font-bold text-lg">CLIPPA</div>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="text-gray-600 hover:text-indigo-700">
-              Contact Us
-            </a>
-            <a href="#" className="text-gray-600 hover:text-indigo-700">
-              Terms
-            </a>
-            <a href="#" className="text-gray-600 hover:text-indigo-700">
-              Privacy Policy
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
