@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { User, BarChart3, Link2, Wallet, SwitchCamera, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Profile() {
   const { user, logout, toggleMode, mode, setUser } = useContext(AuthContext);
@@ -50,7 +51,8 @@ function Profile() {
       <nav className="w-full bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-8">
-            <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">Profile</h1>
+            {/* <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">LOGO</h1> */}
+            <Link to="/" className="text-xl font-bold text-indigo-600 dark:text-indigo-400">LOGO</Link>
             <div className="flex items-center gap-6">
               <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
                 <User size={16} /> General
