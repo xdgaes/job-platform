@@ -22,16 +22,16 @@ function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-50 dark:bg-gray-900 transition">
-      {/* Tombol Back */}
-      <button
-        onClick={() => navigate("/")}
-        className="absolute top-6 left-6 flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition"
-      >
-        <ArrowLeft size={18} />
-        <span>Back</span>
-      </button>
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 relative">
+        {/* Tombol Back di atas form */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute -top-11 left-0 flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition"
+        >
+          <ArrowLeft size={18} />
+          <span>Back</span>
+        </button>
 
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
           Login to Your Account
         </h2>
