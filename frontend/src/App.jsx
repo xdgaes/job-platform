@@ -1,10 +1,20 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import JobList from "./pages/JobList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Navbar from "./components/Navbar";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import { AuthProvider, AuthContext } from "./context/AuthContext";
+
+// Komponen PrivateRoute — hanya untuk user login
+function PrivateRoute({ children }) {
+  const { isAuthenticated } = useContext(AuthContext);
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -29,24 +39,50 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div
-      className={`min-h-screen w-full flex flex-col transition-colors duration-300 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
-      {/* Navbar menerima props global darkMode */}
-      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+    <AuthProvider>
+      <Router>
+        <div
+          className={`flex flex-col min-h-screen transition-colors duration-300 ${
+            darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+          }`}
+        >
+          {/* Navbar global */}
+          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
-      {/* Wrapper isi halaman */}
-      <main className="flex-1 w-full">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/jobs" element={<JobList />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </main>
-    </div>
+          {/* Isi halaman */}
+          <main className="flex-grow">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/jobs" element={<JobList />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+
+              {/* Protected routes */}
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/edit-profile"
+                element={
+                  <PrivateRoute>
+                    <EditProfile />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </main>
+
+          {/* Footer global */}
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
