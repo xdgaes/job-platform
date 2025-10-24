@@ -1,17 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import {
-  User,
-  BarChart3,
-  Link2,
-  Wallet,
-  SwitchCamera,
-  X,
-} from "lucide-react";
+import { User, BarChart3, Link2, Wallet, SwitchCamera, X } from "lucide-react";
 
 function Profile() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, toggleMode, mode, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -20,20 +13,20 @@ function Profile() {
     image: "",
   });
 
+  // Redirect ke login jika user belum login
   useEffect(() => {
     if (!user) navigate("/login");
-  }, [user, navigate]);
-
-  useEffect(() => {
-    if (user) {
-      // Dummy default user data
+    else {
+      // Initialize profile data dari user context
       setProfileData({
-        name: user.email.split("@")[0],
-        bio: "Hey there! I’m using CLIPPA.",
-        image: `https://ui-avatars.com/api/?name=${user.email}&background=4f46e5&color=fff`,
+        name: user.name || user.email.split("@")[0],
+        bio: user.bio || "Hey there! I’m using CLIPPA.",
+        image:
+          user.image ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email)}&background=4f46e5&color=fff`,
       });
     }
-  }, [user]);
+  }, [user, navigate]);
 
   if (!user) return null;
 
@@ -43,7 +36,10 @@ function Profile() {
   };
 
   const handleSave = () => {
-    // Simulasi update user
+    // Update context + localStorage
+    const updatedUser = { ...user, ...profileData };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
     alert("Profile updated successfully!");
     setEditModalOpen(false);
   };
@@ -54,9 +50,7 @@ function Profile() {
       <nav className="w-full bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-8">
-            <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-              Profile
-            </h1>
+            <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">Profile</h1>
             <div className="flex items-center gap-6">
               <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
                 <User size={16} /> General
@@ -75,18 +69,14 @@ function Profile() {
 
           {/* SWITCH CREATOR/CLIPPER */}
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Clipper
-            </span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">Clipper</span>
             <button
-              onClick={() => alert("Switch mode feature coming soon!")}
+              onClick={toggleMode}
               className="bg-gray-200 dark:bg-gray-700 rounded-full p-1 transition"
             >
               <SwitchCamera className="text-gray-700 dark:text-gray-200 w-5 h-5" />
             </button>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Creator
-            </span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">Creator</span>
           </div>
         </div>
       </nav>
@@ -114,7 +104,7 @@ function Profile() {
             </div>
             <div>
               <p className="font-medium">Account Type</p>
-              <p className="text-gray-600 dark:text-gray-300">Clipper</p>
+              <p className="text-gray-600 dark:text-gray-300">{mode}</p>
             </div>
           </div>
         </div>
@@ -172,9 +162,7 @@ function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Profile Picture URL
-                </label>
+                <label className="block text-sm font-medium mb-1">Profile Picture URL</label>
                 <input
                   type="text"
                   name="image"

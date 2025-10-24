@@ -1,51 +1,82 @@
 import React, { createContext, useState, useEffect } from "react";
 
-// Buat context
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // State global untuk login & mode
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [mode, setMode] = useState("clipper"); // atau "creator"
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mode, setMode] = useState("clipper"); // clipper / creator
 
-  // Saat pertama kali load, cek localStorage
+  // Load user & mode dari localStorage saat pertama kali mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
     const storedMode = localStorage.getItem("mode");
-    if (storedUser) {
+
+    if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
+
     if (storedMode) setMode(storedMode);
   }, []);
 
-  // Fungsi login dummy
-  const login = (email, password) => {
-    // Simulasi login sukses
-    const loggedInUser = { email, name: "John Doe" };
-    setUser(loggedInUser);
-    setIsAuthenticated(true);
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
+  // Fungsi login real
+  const login = async (email, password) => {
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return { success: true };
+      } else {
+        return { success: false, message: data.message || "Login failed" };
+      }
+    } catch (err) {
+      console.error(err);
+      return { success: false, message: "Server error" };
+    }
   };
 
-  // Fungsi register dummy
-  const register = (email, password) => {
-    // Simulasi register
-    const newUser = { email, name: "New User" };
-    setUser(newUser);
-    setIsAuthenticated(true);
-    localStorage.setItem("user", JSON.stringify(newUser));
+  // Fungsi register real
+  const register = async (name, email, password) => {
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Setelah register sukses, langsung login
+        return await login(email, password);
+      } else {
+        return { success: false, message: data.message || "Register failed" };
+      }
+    } catch (err) {
+      console.error(err);
+      return { success: false, message: "Server error" };
+    }
   };
 
-  // Fungsi logout
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
-  // Ganti mode creator/clipper
   const toggleMode = () => {
     const newMode = mode === "clipper" ? "creator" : "clipper";
     setMode(newMode);
@@ -55,8 +86,8 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
         user,
+        isAuthenticated,
         mode,
         login,
         register,

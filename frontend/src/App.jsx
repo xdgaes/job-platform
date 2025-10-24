@@ -76,6 +76,8 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              {/* Fallback: route tidak ada */}
+              <Route path="*" element={<Home />} />
             </Routes>
           </main>
 

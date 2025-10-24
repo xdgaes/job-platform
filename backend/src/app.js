@@ -16,4 +16,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/wallet", walletRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Server is running ✅");
+});
+
 export default app;
