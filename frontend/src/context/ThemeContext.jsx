@@ -5,23 +5,22 @@ export const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
 
-  // Ambil preferensi dari localStorage saat pertama load
+  // saat pertama load, ambil dari localStorage
   useEffect(() => {
-    const savedMode = localStorage.getItem("darkMode");
-    if (savedMode === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
+    const saved = localStorage.getItem("darkMode");
+    if (saved === "true") setDarkMode(true);
+    else setDarkMode(false);
   }, []);
 
-  // Simpan & update class HTML saat berubah
+  // setiap kali darkMode berubah, update html class & localStorage
   useEffect(() => {
-    localStorage.setItem("darkMode", darkMode);
     if (darkMode) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
+
+    localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
-  const toggleMode = () => setDarkMode(prev => !prev);
+  const toggleMode = () => setDarkMode((prev) => !prev);
 
   return (
     <ThemeContext.Provider value={{ darkMode, toggleMode }}>

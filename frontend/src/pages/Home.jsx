@@ -53,7 +53,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 pt-6 lg:pt-10">
+    <div className="min-h-screen flex flex-col bg-gray-100 pt-6 lg:pt-10 dark:bg-gray-800 text-gray-900 dark:text-gray-100">
       {/* Main container */}
       <main className="container mx-auto px-6">
         {/* Card wrapper */}

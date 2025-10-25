@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -10,7 +10,7 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Leaderboard from "./pages/Leaderboard";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider, ThemeContext } from "./context/ThemeCOntext";
 
 // Komponen PrivateRoute — hanya untuk user login
 function PrivateRoute({ children }) {
@@ -21,30 +21,10 @@ function PrivateRoute({ children }) {
 // Wrapper untuk memeriksa route saat ini
 function AppWrapper() {
   const location = useLocation();
-
-  // Sembunyikan navbar global jika route profile
   const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile";
 
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Ambil preferensi dark mode dari localStorage saat pertama kali load
-  useEffect(() => {
-    const savedMode = localStorage.getItem("darkMode");
-    if (savedMode === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  // Simpan ke localStorage setiap kali darkMode berubah
-  useEffect(() => {
-    localStorage.setItem("darkMode", darkMode);
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+  // Ambil darkMode dari ThemeContext
+  const { darkMode } = useContext(ThemeContext);
 
   return (
     <div
@@ -52,10 +32,10 @@ function AppWrapper() {
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
-      {/* Navbar global */}
-      {!hideNavbar && <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />}
+      {/* Navbar global, sticky */}
+      {!hideNavbar && <Navbar />}
 
-      {/* Isi halaman */}
+      {/* Main content */}
       <main className="flex-grow">
         <Routes>
           {/* Public routes */}
@@ -83,12 +63,12 @@ function AppWrapper() {
             }
           />
 
-          {/* Fallback: route tidak ada */}
+          {/* Fallback route */}
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
 
-      {/* Footer global */}
+      {/* Footer */}
       <Footer />
     </div>
   );

@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+// frontend/src/components/Navbar.jsx
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
-import { ThemeContext } from "../context/ThemeContext";
-import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeCOntext";
 
-function Navbar({ darkMode, setDarkMode }) {
+function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef(null);
 
-  // Shadow muncul saat scroll
+  const { darkMode, toggleMode } = useContext(ThemeContext);
+
+  // Scroll shadow
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) setIsScrolled(true);
-      else setIsScrolled(false);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Tutup dropdown saat klik di luar
+  // Klik di luar menu
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -28,28 +27,28 @@ function Navbar({ darkMode, setDarkMode }) {
     }
     if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
     else document.removeEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 transition-all duration-300 ${
-        isScrolled ? "shadow-md" : "shadow-sm"
+      className={`w-full sticky top-0 z-50 transition-colors duration-300 border-b ${
+        isScrolled
+          ? "bg-white dark:bg-gray-900 shadow"
+          : "bg-white/90 dark:bg-gray-900/90"
       }`}
     >
       <div className="flex items-center justify-between px-6 py-3">
         {/* LEFT */}
         <div className="flex items-center gap-8">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="Logo" className="h-8" />
             <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
               CLIPPA
             </span>
           </Link>
-
-          {/* Nav Links */}
-          <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6">
             <Link
               to="/"
               className="font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
@@ -73,7 +72,6 @@ function Navbar({ darkMode, setDarkMode }) {
 
         {/* RIGHT */}
         <div className="flex items-center gap-4 relative">
-          {/* Search */}
           <div className="relative hidden sm:block w-48">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <input
@@ -83,18 +81,15 @@ function Navbar({ darkMode, setDarkMode }) {
             />
           </div>
 
-          {/* Message Icon */}
           <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             <MessageCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </button>
 
-          {/* Wallet */}
           <button className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all">
             <Wallet className="h-4 w-4" />
             <span>Wallet</span>
           </button>
 
-          {/* Menu */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -127,11 +122,12 @@ function Navbar({ darkMode, setDarkMode }) {
                   FAQ
                 </Link>
 
-                {/* Dark Mode */}
                 <div className="px-4 py-2 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 mt-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Dark Mode</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    Dark Mode
+                  </span>
                   <button
-                    onClick={() => setDarkMode(!darkMode)}
+                    onClick={toggleMode}
                     className={`w-10 h-5 flex items-center rounded-full p-1 transition-all ${
                       darkMode ? "bg-indigo-600" : "bg-gray-300"
                     }`}
