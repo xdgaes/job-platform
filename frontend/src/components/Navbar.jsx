@@ -4,30 +4,39 @@ import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
 
 function Navbar({ darkMode, setDarkMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef(null);
 
+  // Shadow muncul saat scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) setIsScrolled(true);
+      else setIsScrolled(false);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Tutup dropdown saat klik di luar
   useEffect(() => {
     function handleClickOutside(event) {
-      // cek: kalau menu terbuka & klik di luar menu
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
     }
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
+    else document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
   return (
-    <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 shadow-sm relative transition-colors duration-300">
-      <div className="flex items-center justify-between px-6 py-3"> 
-        {/* max-w-7xl mx-auto */}
-        {/* LEFT SECTION */}
+    <nav
+      className={`sticky top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 transition-all duration-300 ${
+        isScrolled ? "shadow-md" : "shadow-sm"
+      }`}
+    >
+      <div className="flex items-center justify-between px-6 py-3">
+        {/* LEFT */}
         <div className="flex items-center gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
@@ -37,7 +46,7 @@ function Navbar({ darkMode, setDarkMode }) {
             </span>
           </Link>
 
-          {/* Navigation links */}
+          {/* Nav Links */}
           <div className="flex items-center gap-6">
             <Link
               to="/"
@@ -60,9 +69,9 @@ function Navbar({ darkMode, setDarkMode }) {
           </div>
         </div>
 
-        {/* RIGHT SECTION */}
+        {/* RIGHT */}
         <div className="flex items-center gap-4 relative">
-          {/* Search bar */}
+          {/* Search */}
           <div className="relative hidden sm:block w-48">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <input
@@ -77,13 +86,13 @@ function Navbar({ darkMode, setDarkMode }) {
             <MessageCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </button>
 
-          {/* Wallet Button */}
+          {/* Wallet */}
           <button className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all">
             <Wallet className="h-4 w-4" />
             <span>Wallet</span>
           </button>
 
-          {/* Menu Icon */}
+          {/* Menu */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -92,7 +101,6 @@ function Navbar({ darkMode, setDarkMode }) {
               <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />
             </button>
 
-            {/* Dropdown */}
             {menuOpen && (
               <div className="absolute right-0 top-10 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50 transition-all duration-200">
                 <Link
@@ -117,7 +125,7 @@ function Navbar({ darkMode, setDarkMode }) {
                   FAQ
                 </Link>
 
-                {/* Dark Mode Switch */}
+                {/* Dark Mode */}
                 <div className="px-4 py-2 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 mt-2">
                   <span className="text-sm text-gray-600 dark:text-gray-300">Dark Mode</span>
                   <button

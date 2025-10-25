@@ -26,7 +26,6 @@ const Home = () => {
     currentPage * perPage
   );
 
-  // 👇 Pagination logic (smart shorten)
   const getVisiblePages = () => {
     const pages = [];
     const maxVisible = 5;
@@ -54,9 +53,9 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* Main Container */}
-      <main className="flex-1 container mx-auto px-6 py-10">
+    <div className="min-h-screen flex flex-col bg-gray-100 pt-6 lg:pt-10">
+      {/* Main container */}
+      <main className="container mx-auto px-6">
         {/* Card wrapper */}
         <div className="bg-white rounded-2xl shadow-md p-8">
           {/* Header bar */}
@@ -107,8 +106,7 @@ const Home = () => {
                 <div className="p-4 space-y-2">
                   <h3 className="text-lg font-semibold">{item.title}</h3>
                   <p className="text-sm text-gray-600">
-                    Participants:{" "}
-                    <span className="font-medium">{item.participants}</span>
+                    Participants: <span className="font-medium">{item.participants}</span>
                   </p>
                   <p className="text-sm text-gray-600">
                     Views: <span className="font-medium">{item.views}</span>
@@ -142,7 +140,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Pagination Section (outside container) */}
+        {/* Pagination */}
         <div className="flex justify-between items-center mt-10 px-4">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -159,9 +157,7 @@ const Home = () => {
           <div className="flex gap-2 items-center">
             {getVisiblePages().map((page, index) =>
               page === "..." ? (
-                <span key={index} className="px-2 text-gray-400">
-                  ...
-                </span>
+                <span key={index} className="px-2 text-gray-400">...</span>
               ) : (
                 <button
                   key={index}
@@ -191,6 +187,11 @@ const Home = () => {
           </button>
         </div>
       </main>
+
+      {/* Floating chat button */}
+      <button className="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg flex items-center justify-center z-50">
+        Chat
+      </button>
     </div>
   );
 };

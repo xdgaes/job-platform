@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import Leaderboard from "./pages/Leaderboard";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 
 // Komponen PrivateRoute — hanya untuk user login
@@ -61,6 +62,7 @@ function AppWrapper() {
           <Route path="/jobs" element={<JobList />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
 
           {/* Protected routes */}
           <Route
