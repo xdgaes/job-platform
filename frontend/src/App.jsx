@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Leaderboard from "./pages/Leaderboard";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 // Komponen PrivateRoute — hanya untuk user login
 function PrivateRoute({ children }) {
@@ -96,9 +97,11 @@ function AppWrapper() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppWrapper />
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <AppWrapper />
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

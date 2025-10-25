@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
+import { ThemeContext } from "../context/ThemeContext";
+import { useContext } from "react";
 
 function Navbar({ darkMode, setDarkMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
