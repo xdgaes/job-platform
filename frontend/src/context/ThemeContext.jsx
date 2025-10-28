@@ -3,16 +3,18 @@ import React, { createContext, useState, useEffect } from "react";
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const getInitialTheme = () => {
+    if (typeof window === "undefined") return false;
+    const saved = window.localStorage.getItem("darkMode");
+    if (saved !== null) return saved === "true";
+    return (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+  };
 
-  // saat pertama load, ambil dari localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved === "true") setDarkMode(true);
-    else setDarkMode(false);
-  }, []);
+  const [darkMode, setDarkMode] = useState(getInitialTheme);
 
-  // setiap kali darkMode berubah, update html class & localStorage
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) root.classList.add("dark");
