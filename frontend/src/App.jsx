@@ -16,7 +16,7 @@ import PrivateRoute from "./components/PrivateRoute";
 // Wrapper untuk memeriksa route saat ini
 function AppWrapper() {
   const location = useLocation();
-  const hideNavbar = false; // keep navbar consistent for better UX
+  const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile";
 
   // Ambil darkMode dari ThemeContext
   const { darkMode } = useContext(ThemeContext);
