@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
+import { AuthContext } from "../context/AuthContext";
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useContext(AuthContext);
 
   const [profile, setProfile] = useState({
-    name: "Hadisurya Setiawan",
-    username: "hadissp",
-    bio: "Web developer and tech enthusiast.",
-    email: "hadisurya@example.com",
+    name: "",
+    username: "",
+    bio: "",
+    email: "",
     avatar: "/default-avatar.png",
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.name || user.email?.split("@")[0] || "",
+        username: user.username || user.name || user.email?.split("@")[0] || "",
+        bio: user.bio || "",
+        email: user.email || "",
+        avatar:
+          user.image ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=4f46e5&color=fff`,
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,8 +44,16 @@ const EditProfile = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    console.log("Profile updated:", profile);
-    navigate("/profile"); // kembali ke halaman profile
+    const updated = {
+      ...user,
+      name: profile.name,
+      username: profile.username,
+      bio: profile.bio,
+      image: profile.avatar,
+    };
+    setUser(updated);
+    localStorage.setItem("user", JSON.stringify(updated));
+    navigate("/profile");
   };
 
   return (
