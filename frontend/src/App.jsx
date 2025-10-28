@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -9,19 +9,14 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Leaderboard from "./pages/Leaderboard";
-import { AuthProvider, AuthContext } from "./context/AuthContext";
-import { ThemeProvider, ThemeContext } from "./context/ThemeCOntext";
-
-// Komponen PrivateRoute — hanya untuk user login
-function PrivateRoute({ children }) {
-  const { isAuthenticated } = useContext(AuthContext);
-  return isAuthenticated ? children : <Navigate to="/login" />;
-}
+import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider, ThemeContext } from "./context/ThemeContext";
+import PrivateRoute from "./components/PrivateRoute";
 
 // Wrapper untuk memeriksa route saat ini
 function AppWrapper() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile";
+  const hideNavbar = false; // keep navbar consistent for better UX
 
   // Ambil darkMode dari ThemeContext
   const { darkMode } = useContext(ThemeContext);

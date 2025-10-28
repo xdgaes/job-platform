@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { User, BarChart3, Link2, Wallet, SwitchCamera, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { X } from "lucide-react";
 
 function Profile() {
   const { user, logout, toggleMode, mode, setUser } = useContext(AuthContext);
@@ -47,44 +46,9 @@ function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition">
-      {/* NAVBAR KHUSUS PROFILE */}
-      <nav className="w-full bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-8">
-            {/* <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">LOGO</h1> */}
-            <Link to="/" className="text-xl font-bold text-indigo-600 dark:text-indigo-400">LOGO</Link>
-            <div className="flex items-center gap-6">
-              <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
-                <User size={16} /> General
-              </button>
-              <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
-                <BarChart3 size={16} /> Analytics
-              </button>
-              <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
-                <Link2 size={16} /> Connected Account
-              </button>
-              <button className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600">
-                <Wallet size={16} /> Wallet
-              </button>
-            </div>
-          </div>
-
-          {/* SWITCH CREATOR/CLIPPER */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 dark:text-gray-300">Clipper</span>
-            <button
-              onClick={toggleMode}
-              className="bg-gray-200 dark:bg-gray-700 rounded-full p-1 transition"
-            >
-              <SwitchCamera className="text-gray-700 dark:text-gray-200 w-5 h-5" />
-            </button>
-            <span className="text-sm text-gray-600 dark:text-gray-300">Creator</span>
-          </div>
-        </div>
-      </nav>
-
       {/* CONTENT */}
       <div className="max-w-4xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+        <h1 className="text-2xl font-semibold mb-6">Profile</h1>
         <div className="flex items-center gap-6">
           <img
             src={profileData.image}
