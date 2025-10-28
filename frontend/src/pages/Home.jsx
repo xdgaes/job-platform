@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaPlus, FaFilter, FaSort } from "react-icons/fa";
+import { Plus, Filter, ArrowUpDown } from "lucide-react";
 
 const Home = () => {
   const dummyData = Array.from({ length: 42 }, (_, i) => ({
@@ -66,7 +66,7 @@ const Home = () => {
 
             <div className="flex flex-wrap gap-3 items-center">
               <div className="flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg bg-white">
-                <FaFilter className="text-gray-500" />
+                <Filter className="text-gray-500 h-4 w-4" />
                 <select className="outline-none text-sm">
                   <option>All Categories</option>
                   <option>Photography</option>
@@ -76,7 +76,7 @@ const Home = () => {
               </div>
 
               <div className="flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg bg-white">
-                <FaSort className="text-gray-500" />
+                <ArrowUpDown className="text-gray-500 h-4 w-4" />
                 <select className="outline-none text-sm">
                   <option>Sort by</option>
                   <option>Most Viewed</option>
@@ -86,7 +86,7 @@ const Home = () => {
               </div>
 
               <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition">
-                <FaPlus /> Create
+                <Plus className="h-4 w-4" /> Create
               </button>
             </div>
           </div>
@@ -99,6 +99,7 @@ const Home = () => {
                 className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition"
               >
                 <img
+                  loading="lazy"
                   src={item.image}
                   alt={item.title}
                   className="w-full h-40 object-cover"
