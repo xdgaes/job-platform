@@ -27,46 +27,46 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 pt-6 lg:pt-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0 px-6 pb-4">
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 pt-6 lg:pt-10 transition-colors duration-300">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 sm:mb-0 px-6 pb-4">
               Leaderboard
         </h1>
       <main className="container mx-auto px-6 flex-grow mb-10">
         {/* Stats */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-            <h3 className="text-gray-500">Total Clippers</h3>
-            <p className="text-2xl font-bold text-indigo-600">{totalClippers}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 text-center transition-colors duration-300">
+            <h3 className="text-gray-500 dark:text-gray-400">Total Clippers</h3>
+            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{totalClippers}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-            <h3 className="text-gray-500">Total Views</h3>
-            <p className="text-2xl font-bold text-indigo-600">{totalViews}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 text-center transition-colors duration-300">
+            <h3 className="text-gray-500 dark:text-gray-400">Total Views</h3>
+            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{totalViews}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-            <h3 className="text-gray-500">Total Campaigns</h3>
-            <p className="text-2xl font-bold text-indigo-600">{totalCampaigns}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 text-center transition-colors duration-300">
+            <h3 className="text-gray-500 dark:text-gray-400">Total Campaigns</h3>
+            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{totalCampaigns}</p>
           </div>
         </div>
 
         {/* Top Users Table */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Top Users</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 transition-colors duration-300">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Top Users</h2>
           <table className="w-full table-auto border-collapse">
             <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th className="border-b px-4 py-2 text-left text-gray-500">#</th>
-                <th className="border-b px-4 py-2 text-left text-gray-500">User</th>
-                <th className="border-b px-4 py-2 text-left text-gray-500">Campaigns</th>
-                <th className="border-b px-4 py-2 text-left text-gray-500">Views</th>
+              <tr className="bg-gray-50 dark:bg-gray-700">
+                <th className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-gray-500 dark:text-gray-400">#</th>
+                <th className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-gray-500 dark:text-gray-400">User</th>
+                <th className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-gray-500 dark:text-gray-400">Campaigns</th>
+                <th className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-gray-500 dark:text-gray-400">Views</th>
               </tr>
             </thead>
             <tbody>
               {topUsers.map((user) => (
-                <tr key={user.rank} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                  <td className="border-b px-4 py-2">{user.rank}</td>
-                  <td className="border-b px-4 py-2">{user.name}</td>
-                  <td className="border-b px-4 py-2">{user.campaigns}</td>
-                  <td className="border-b px-4 py-2">{user.views}</td>
+                <tr key={user.rank} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-900 dark:text-gray-100">
+                  <td className="border-b border-gray-200 dark:border-gray-600 px-4 py-2">{user.rank}</td>
+                  <td className="border-b border-gray-200 dark:border-gray-600 px-4 py-2">{user.name}</td>
+                  <td className="border-b border-gray-200 dark:border-gray-600 px-4 py-2">{user.campaigns}</td>
+                  <td className="border-b border-gray-200 dark:border-gray-600 px-4 py-2">{user.views}</td>
                 </tr>
               ))}
             </tbody>

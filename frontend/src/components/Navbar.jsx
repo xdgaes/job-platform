@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
-import { ThemeContext } from "../context/ThemeCOntext";
+import { ThemeContext } from "../context/ThemeContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,7 +33,7 @@ function Navbar() {
 
   return (
     <nav
-      className={`w-full sticky top-0 z-50 transition-colors duration-300 border-b ${
+      className={`w-full sticky top-0 z-50 transition-colors duration-300 border-b border-gray-200 dark:border-gray-700 ${
         isScrolled
           ? "bg-white dark:bg-gray-900 shadow"
           : "bg-white/90 dark:bg-gray-900/90"
@@ -43,7 +43,7 @@ function Navbar() {
         {/* LEFT */}
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Logo" className="h-8" />
+            <img src="/vite.svg" alt="Logo" className="h-8" />
             <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
               CLIPPA
             </span>
@@ -62,10 +62,10 @@ function Navbar() {
               Leaderboard
             </Link>
             <Link
-              to="/program"
+              to="/jobs"
               className="font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
             >
-              Program
+              Jobs
             </Link>
           </div>
         </div>
@@ -108,14 +108,14 @@ function Navbar() {
                   Profile
                 </Link>
                 <Link
-                  to="/support"
+                  to="#"
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Support
                 </Link>
                 <Link
-                  to="/faq"
+                  to="#"
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
