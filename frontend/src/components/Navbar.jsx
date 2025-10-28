@@ -33,7 +33,7 @@ function Navbar() {
 
   return (
     <nav
-      className={`w-full sticky top-0 z-50 transition-colors duration-300 border-b ${
+      className={`w-full sticky top-0 z-50 transition-colors duration-300 border-b border-gray-200 dark:border-gray-700 ${
         isScrolled
           ? "bg-white dark:bg-gray-900 shadow"
           : "bg-white/90 dark:bg-gray-900/90"
