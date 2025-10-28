@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { User, BarChart3, Link2, Wallet, SwitchCamera, X, Scissors, Video, CheckCircle } from "lucide-react";
+import Analytics from "./Analytics";
+import ConnectedAccounts from "./ConnectedAccounts";
+import WalletPage from "./Wallet";
 
 function Profile() {
   const { user, logout, toggleMode, mode, setUser, switchRole } = useContext(AuthContext);
@@ -203,35 +206,11 @@ function Profile() {
           </>
         )}
 
-        {activeTab === "analytics" && (
-          <div className="text-center py-20">
-            <BarChart3 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Analytics</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              View your performance metrics, engagement stats, and earnings here.
-            </p>
-          </div>
-        )}
+        {activeTab === "analytics" && <Analytics />}
 
-        {activeTab === "connected" && (
-          <div className="text-center py-20">
-            <Link2 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Connected Accounts</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Link your social media accounts and other platforms here.
-            </p>
-          </div>
-        )}
+        {activeTab === "connected" && <ConnectedAccounts />}
 
-        {activeTab === "wallet" && (
-          <div className="text-center py-20">
-            <Wallet className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Wallet</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Manage your payments, earnings, and withdrawal methods here.
-            </p>
-          </div>
-        )}
+        {activeTab === "wallet" && <WalletPage />}
       </div>
 
       {/* EDIT PROFILE MODAL */}

@@ -24,6 +24,8 @@ model User {
   jobs        Job[]
   applications Application[]
   wallet       Wallet?
+  campaigns    Campaign[]
+  connectedAccounts ConnectedAccount[]
 }
 
 model Job {
@@ -67,4 +69,72 @@ model Transaction {
   createdAt   DateTime @default(now())
 
   wallet Wallet @relation(fields: [walletId], references: [id])
+}
+
+model Campaign {
+  id          Int      @id @default(autoincrement())
+  creatorId   Int
+  name        String
+  description String?
+  budget      Float
+  totalSpent  Float    @default(0)
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  status      String   @default("active") // 'active' | 'paused' | 'completed'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator     User     @relation(fields: [creatorId], references: [id])
+  clips       Clip[]
+  analytics   CampaignAnalytics?
+}
+
+model Clip {
+  id          Int      @id @default(autoincrement())
+  campaignId  Int
+  clipperId   Int
+  title       String
+  platform    String   // 'youtube' | 'instagram' | 'tiktok'
+  videoUrl    String
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  shares      Int      @default(0)
+  rewardEarned Float   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+}
+
+model CampaignAnalytics {
+  id              Int      @id @default(autoincrement())
+  campaignId      Int      @unique
+  totalViews      Int      @default(0)
+  totalLikes      Int      @default(0)
+  totalShares     Int      @default(0)
+  totalClippers   Int      @default(0)
+  youtubeViews    Int      @default(0)
+  instagramViews  Int      @default(0)
+  tiktokViews     Int      @default(0)
+  cpm             Float    @default(0) // Cost per thousand views
+  demographics    String?  // JSON string with demographic data
+  updatedAt       DateTime @updatedAt
+
+  campaign        Campaign @relation(fields: [campaignId], references: [id])
+}
+
+model ConnectedAccount {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  platform    String   // 'youtube' | 'instagram' | 'tiktok'
+  username    String
+  accountId   String   // Platform-specific account ID
+  accessToken String?  // OAuth token (encrypted)
+  refreshToken String? // OAuth refresh token (encrypted)
+  connectedAt DateTime @default(now())
+  isActive    Boolean  @default(true)
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, platform])
 }

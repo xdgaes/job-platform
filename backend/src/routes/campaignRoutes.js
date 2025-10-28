@@ -1,0 +1,18 @@
+import express from "express";
+import {
+  getCampaigns,
+  getCampaignById,
+  createCampaign,
+  updateCampaignAnalytics,
+  addClip,
+} from "../controllers/campaignController.js";
+
+const router = express.Router();
+
+router.get("/user/:userId", getCampaigns);
+router.get("/:campaignId", getCampaignById);
+router.post("/", createCampaign);
+router.post("/:campaignId/analytics", updateCampaignAnalytics);
+router.post("/clips", addClip);
+
+export default router;
