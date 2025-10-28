@@ -38,6 +38,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
         setIsAuthenticated(true);
+        // Set mode based on user's currentRole from database
+        if (data.user.currentRole) {
+          setMode(data.user.currentRole);
+          localStorage.setItem("mode", data.user.currentRole);
+        }
         return { success: true };
       } else {
         return { success: false, message: data.message || "Login failed" };
@@ -49,12 +54,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Fungsi register real
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, currentRole = "clipper") => {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, currentRole }),
       });
 
       const data = await res.json();
@@ -78,10 +83,41 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
   };
 
-  const toggleMode = () => {
+  // Switch role and update in database
+  const switchRole = async (newRole) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/auth/switch-role`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentRole: newRole }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Update token and user with new role
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("mode", data.user.currentRole);
+        setUser(data.user);
+        setMode(data.user.currentRole);
+        return { success: true };
+      } else {
+        return { success: false, message: data.message || "Failed to switch role" };
+      }
+    } catch (err) {
+      console.error(err);
+      return { success: false, message: "Server error" };
+    }
+  };
+
+  const toggleMode = async () => {
     const newMode = mode === "clipper" ? "creator" : "clipper";
-    setMode(newMode);
-    localStorage.setItem("mode", newMode);
+    await switchRole(newMode);
   };
 
   return (
@@ -95,6 +131,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         toggleMode,
+        switchRole,
       }}
     >
       {children}
