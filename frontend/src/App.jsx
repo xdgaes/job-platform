@@ -9,6 +9,9 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Leaderboard from "./pages/Leaderboard";
+import Analytics from "./pages/Analytics";
+import ConnectedAccounts from "./pages/ConnectedAccounts";
+import Wallet from "./pages/Wallet";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider, ThemeContext } from "./context/ThemeContext";
 import PrivateRoute from "./components/PrivateRoute";
@@ -16,7 +19,7 @@ import PrivateRoute from "./components/PrivateRoute";
 // Wrapper untuk memeriksa route saat ini
 function AppWrapper() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile";
+  const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile" || location.pathname === "/analytics" || location.pathname === "/connected-accounts" || location.pathname === "/wallet";
 
   // Ambil darkMode dari ThemeContext
   const { darkMode } = useContext(ThemeContext);
@@ -54,6 +57,30 @@ function AppWrapper() {
             element={
               <PrivateRoute>
                 <EditProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <PrivateRoute>
+                <Analytics />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/connected-accounts"
+            element={
+              <PrivateRoute>
+                <ConnectedAccounts />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/wallet"
+            element={
+              <PrivateRoute>
+                <Wallet />
               </PrivateRoute>
             }
           />

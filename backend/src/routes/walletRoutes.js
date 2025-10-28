@@ -1,9 +1,16 @@
 import express from "express";
-import { getWallet, updateWallet } from "../controllers/walletController.js";
+import { 
+  getWallet, 
+  addFunds, 
+  withdrawFunds, 
+  getTransactions 
+} from "../controllers/walletController.js";
 
 const router = express.Router();
 
 router.get("/:userId", getWallet);
-router.post("/:userId", updateWallet);
+router.get("/:userId/transactions", getTransactions);
+router.post("/:userId/add", addFunds);
+router.post("/:userId/withdraw", withdrawFunds);
 
 export default router;

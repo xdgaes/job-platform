@@ -67,6 +67,12 @@ function Navbar() {
             >
               Jobs
             </Link>
+            <Link
+              to="/analytics"
+              className="font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
+            >
+              Analytics
+            </Link>
           </div>
         </div>
 
@@ -81,14 +87,20 @@ function Navbar() {
             />
           </div>
 
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <Link
+            to="/connected-accounts"
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+          >
             <MessageCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-          </button>
+          </Link>
 
-          <button className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all">
+          <Link
+            to="/wallet"
+            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all"
+          >
             <Wallet className="h-4 w-4" />
             <span>Wallet</span>
-          </button>
+          </Link>
 
           <div className="relative" ref={menuRef}>
             <button
