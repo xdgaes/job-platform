@@ -2,23 +2,34 @@ import React, { createContext, useState, useEffect } from "react";
 
 export const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  // saat pertama load, ambil dari localStorage
-  useEffect(() => {
+// Initialize dark mode from localStorage before React renders
+const getInitialDarkMode = () => {
+  try {
     const saved = localStorage.getItem("darkMode");
-    if (saved === "true") setDarkMode(true);
-    else setDarkMode(false);
-  }, []);
+    return saved === "true";
+  } catch {
+    return false;
+  }
+};
 
-  // setiap kali darkMode berubah, update html class & localStorage
+export const ThemeProvider = ({ children }) => {
+  // Initialize state with value from localStorage
+  const [darkMode, setDarkMode] = useState(getInitialDarkMode);
+
+  // Update HTML class and localStorage whenever darkMode changes
   useEffect(() => {
     const root = document.documentElement;
-    if (darkMode) root.classList.add("dark");
-    else root.classList.remove("dark");
+    if (darkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
 
-    localStorage.setItem("darkMode", darkMode);
+    try {
+      localStorage.setItem("darkMode", darkMode.toString());
+    } catch (error) {
+      console.error("Failed to save theme preference:", error);
+    }
   }, [darkMode]);
 
   const toggleMode = () => setDarkMode((prev) => !prev);
