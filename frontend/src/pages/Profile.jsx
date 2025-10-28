@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { User, BarChart3, Link2, Wallet, SwitchCamera, X } from "lucide-react";
+import { User, BarChart3, Link2, Wallet, SwitchCamera, X, Scissors, Video, CheckCircle } from "lucide-react";
 
 function Profile() {
-  const { user, logout, toggleMode, mode, setUser } = useContext(AuthContext);
+  const { user, logout, toggleMode, mode, setUser, switchRole } = useContext(AuthContext);
   const navigate = useNavigate();
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [roleSwitchModalOpen, setRoleSwitchModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
+  const [switchingRole, setSwitchingRole] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "",
     bio: "",
@@ -43,6 +45,23 @@ function Profile() {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     alert("Profile updated successfully!");
     setEditModalOpen(false);
+  };
+
+  const handleRoleSwitch = async (newRole) => {
+    if (newRole === mode) {
+      setRoleSwitchModalOpen(false);
+      return;
+    }
+
+    setSwitchingRole(true);
+    const result = await switchRole(newRole);
+    setSwitchingRole(false);
+    
+    if (result.success) {
+      setRoleSwitchModalOpen(false);
+    } else {
+      alert(result.message || "Failed to switch role");
+    }
   };
 
   return (
@@ -100,15 +119,22 @@ function Profile() {
 
           {/* MODE TOGGLE */}
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {mode === "clipper" ? "Clipper" : "Creator"}
-            </span>
+            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1.5 rounded-full">
+              {mode === "clipper" ? (
+                <Scissors className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              ) : (
+                <Video className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              )}
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                {mode === "clipper" ? "Clipper" : "Creator"}
+              </span>
+            </div>
             <button
-              onClick={toggleMode}
-              className="bg-gray-200 dark:bg-gray-700 rounded-full p-1.5 transition hover:bg-gray-300 dark:hover:bg-gray-600"
-              title="Toggle between Clipper and Creator mode"
+              onClick={() => setRoleSwitchModalOpen(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-1.5 transition"
+              title="Switch role"
             >
-              <SwitchCamera className="text-gray-700 dark:text-gray-200 w-5 h-5" />
+              <SwitchCamera className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -139,8 +165,20 @@ function Profile() {
                   <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
                 </div>
                 <div>
-                  <p className="font-medium">Account Type</p>
-                  <p className="text-gray-600 dark:text-gray-300 capitalize">{mode}</p>
+                  <p className="font-medium">Current Role</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {mode === "clipper" ? (
+                      <>
+                        <Scissors className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span className="text-gray-600 dark:text-gray-300 capitalize">{mode}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Video className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span className="text-gray-600 dark:text-gray-300 capitalize">{mode}</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -255,6 +293,127 @@ function Profile() {
                 Save Changes
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ROLE SWITCH MODAL */}
+      {roleSwitchModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md relative">
+            <button
+              onClick={() => setRoleSwitchModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:text-gray-300"
+              disabled={switchingRole}
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-semibold mb-2">Switch Role</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              Choose the role you want to use for this session
+            </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleRoleSwitch("clipper")}
+                disabled={switchingRole}
+                className={`relative p-6 border-2 rounded-xl transition-all ${
+                  mode === "clipper"
+                    ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20"
+                    : "border-gray-300 dark:border-gray-600 hover:border-indigo-400"
+                } ${switchingRole ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className={`p-3 rounded-full ${
+                    mode === "clipper" 
+                      ? "bg-indigo-100 dark:bg-indigo-900/40" 
+                      : "bg-gray-100 dark:bg-gray-700"
+                  }`}>
+                    <Scissors
+                      className={`w-8 h-8 ${
+                        mode === "clipper"
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-600 dark:text-gray-400"
+                      }`}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <span
+                      className={`font-semibold block ${
+                        mode === "clipper"
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      Clipper
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Create clips & earn
+                    </span>
+                  </div>
+                </div>
+                {mode === "clipper" && (
+                  <div className="absolute top-3 right-3">
+                    <CheckCircle className="w-6 h-6 text-indigo-600 dark:text-indigo-400 fill-current" />
+                  </div>
+                )}
+              </button>
+
+              <button
+                onClick={() => handleRoleSwitch("creator")}
+                disabled={switchingRole}
+                className={`relative p-6 border-2 rounded-xl transition-all ${
+                  mode === "creator"
+                    ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20"
+                    : "border-gray-300 dark:border-gray-600 hover:border-indigo-400"
+                } ${switchingRole ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className={`p-3 rounded-full ${
+                    mode === "creator" 
+                      ? "bg-indigo-100 dark:bg-indigo-900/40" 
+                      : "bg-gray-100 dark:bg-gray-700"
+                  }`}>
+                    <Video
+                      className={`w-8 h-8 ${
+                        mode === "creator"
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-600 dark:text-gray-400"
+                      }`}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <span
+                      className={`font-semibold block ${
+                        mode === "creator"
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      Creator
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Get clips made
+                    </span>
+                  </div>
+                </div>
+                {mode === "creator" && (
+                  <div className="absolute top-3 right-3">
+                    <CheckCircle className="w-6 h-6 text-indigo-600 dark:text-indigo-400 fill-current" />
+                  </div>
+                )}
+              </button>
+            </div>
+
+            {switchingRole && (
+              <p className="text-center text-sm text-indigo-600 dark:text-indigo-400 mt-4">
+                Switching role...
+              </p>
+            )}
+
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-6">
+              You can switch between roles anytime from your profile
+            </p>
           </div>
         </div>
       )}

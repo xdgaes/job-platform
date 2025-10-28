@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Scissors, Video } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 
 function Register() {
@@ -9,6 +9,7 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [currentRole, setCurrentRole] = useState("clipper");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -23,7 +24,7 @@ function Register() {
     setError("");
     setSuccess(false);
 
-    const result = await register(name, email, password);
+    const result = await register(name, email, password, currentRole);
     if (result.success) {
       setSuccess(true);
       setTimeout(() => navigate("/profile"), 1000);
@@ -43,11 +44,98 @@ function Register() {
           <span>Back</span>
         </button>
 
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-gray-100">
+        <h2 className="text-2xl font-bold text-center mb-2 text-gray-800 dark:text-gray-100">
           Create an Account
         </h2>
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+          Join as a Clipper or Creator
+        </p>
 
         <form onSubmit={handleRegister} className="space-y-4">
+          {/* Role Selection */}
+          <div>
+            <label className="block text-sm font-medium mb-3">I want to join as:</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setCurrentRole("clipper")}
+                className={`relative p-4 border-2 rounded-lg transition-all ${
+                  currentRole === "clipper"
+                    ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20"
+                    : "border-gray-300 dark:border-gray-600 hover:border-indigo-400"
+                }`}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Scissors
+                    className={`w-8 h-8 ${
+                      currentRole === "clipper"
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-600 dark:text-gray-400"
+                    }`}
+                  />
+                  <span
+                    className={`font-semibold text-sm ${
+                      currentRole === "clipper"
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    Clipper
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Create clips & earn
+                  </span>
+                </div>
+                {currentRole === "clipper" && (
+                  <div className="absolute top-2 right-2 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrentRole("creator")}
+                className={`relative p-4 border-2 rounded-lg transition-all ${
+                  currentRole === "creator"
+                    ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20"
+                    : "border-gray-300 dark:border-gray-600 hover:border-indigo-400"
+                }`}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Video
+                    className={`w-8 h-8 ${
+                      currentRole === "creator"
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-600 dark:text-gray-400"
+                    }`}
+                  />
+                  <span
+                    className={`font-semibold text-sm ${
+                      currentRole === "creator"
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    Creator
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Get clips made
+                  </span>
+                </div>
+                {currentRole === "creator" && (
+                  <div className="absolute top-2 right-2 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                )}
+              </button>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
             <input
@@ -92,7 +180,7 @@ function Register() {
             type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md font-medium transition-all"
           >
-            Register
+            Register as {currentRole === "clipper" ? "Clipper" : "Creator"}
           </button>
         </form>
       </div>
