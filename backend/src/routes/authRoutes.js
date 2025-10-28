@@ -1,7 +1,7 @@
 // routes/authRoutes.js
 import express from "express";
 import { register, login, switchRole } from "../controllers/authController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router.post("/register", register);
 router.post("/login", login);
 
 // ✅ SWITCH ROLE (protected route)
-router.post("/switch-role", authMiddleware, switchRole);
+router.post("/switch-role", authenticateToken, switchRole);
 
 export default router;
