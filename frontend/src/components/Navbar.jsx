@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Search, MessageCircle, Menu, Wallet } from "lucide-react";
-import { ThemeContext } from "../context/ThemeCOntext";
+import { ThemeContext } from "../context/ThemeContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);

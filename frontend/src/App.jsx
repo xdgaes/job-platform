@@ -1,16 +1,18 @@
-import React, { useContext } from "react";
+import React, { Suspense, useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import JobList from "./pages/JobList";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import Leaderboard from "./pages/Leaderboard";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
-import { ThemeProvider, ThemeContext } from "./context/ThemeCOntext";
+import { ThemeProvider, ThemeContext } from "./context/ThemeContext";
+
+// Route-based code splitting
+const Home = React.lazy(() => import("./pages/Home"));
+const JobList = React.lazy(() => import("./pages/JobList"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const EditProfile = React.lazy(() => import("./pages/EditProfile"));
+const Leaderboard = React.lazy(() => import("./pages/Leaderboard"));
 
 // Komponen PrivateRoute — hanya untuk user login
 function PrivateRoute({ children }) {
@@ -37,35 +39,37 @@ function AppWrapper() {
 
       {/* Main content */}
       <main className="flex-grow">
-        <Routes>
+        <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
+          <Routes>
           {/* Public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/jobs" element={<JobList />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/jobs" element={<JobList />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
 
           {/* Protected routes */}
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/edit-profile"
-            element={
-              <PrivateRoute>
-                <EditProfile />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <PrivateRoute>
+                  <EditProfile />
+                </PrivateRoute>
+              }
+            />
 
           {/* Fallback route */}
-          <Route path="*" element={<Home />} />
-        </Routes>
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}
