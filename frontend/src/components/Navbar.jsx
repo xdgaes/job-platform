@@ -67,12 +67,6 @@ function Navbar() {
             >
               Jobs
             </Link>
-            <Link
-              to="/analytics"
-              className="font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
-            >
-              Analytics
-            </Link>
           </div>
         </div>
 
