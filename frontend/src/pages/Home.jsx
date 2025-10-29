@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FaPlus, FaFilter, FaSort } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, mode } = useContext(AuthContext);
+  
   const dummyData = Array.from({ length: 42 }, (_, i) => ({
     id: i + 1,
     title: `Campaign ${i + 1}`,
@@ -52,6 +57,16 @@ const Home = () => {
     return pages;
   };
 
+  const handleCreateClick = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    } else if (mode === "creator") {
+      navigate("/create-campaign");
+    } else {
+      alert("Only CREATOR role can create campaigns. Switch to CREATOR mode to create campaigns.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 pt-6 lg:pt-10 text-gray-900 dark:text-gray-100 pb-4 transition-colors duration-300">
       {/* Main container */}
@@ -85,9 +100,14 @@ const Home = () => {
                 </select>
               </div>
 
-              <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition">
-                <FaPlus /> Create
-              </button>
+              {(!isAuthenticated || mode === "creator") && (
+                <button 
+                  onClick={handleCreateClick}
+                  className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
+                >
+                  <FaPlus /> Create Campaign
+                </button>
+              )}
             </div>
           </div>
 

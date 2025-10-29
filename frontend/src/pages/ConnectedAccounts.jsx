@@ -116,7 +116,7 @@ function ConnectedAccounts() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Connected Accounts</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Manage your social media platform connections
+          Connect your YouTube, Instagram, and TikTok accounts to share your clips and earn rewards
         </p>
       </div>
 

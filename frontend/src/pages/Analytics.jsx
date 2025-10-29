@@ -107,16 +107,9 @@ function Analytics() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 text-center">
           <TrendingUp className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <h2 className="text-2xl font-semibold mb-2">No Campaigns Yet</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
-            Create your first campaign to start tracking analytics
+          <p className="text-gray-500 dark:text-gray-400">
+            You haven't created any campaigns yet. Go to the Home page to create your first campaign.
           </p>
-          <button
-            onClick={() => navigate("/create-campaign")}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition"
-          >
-            <Plus className="w-5 h-5" />
-            Create Campaign
-          </button>
         </div>
       </div>
     );
@@ -131,13 +124,6 @@ function Analytics() {
         <h1 className="text-3xl font-bold">Campaign Analytics</h1>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={() => navigate("/create-campaign")}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition"
-          >
-            <Plus className="w-4 h-4" />
-            New Campaign
-          </button>
           {/* Campaign Selector */}
           <div className="relative">
             <select
