@@ -6,12 +6,13 @@ import {
   updateCampaignAnalytics,
   addClip,
 } from "../controllers/campaignController.js";
+import { uploadCampaignImage } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
 router.get("/user/:userId", getCampaigns);
 router.get("/:campaignId", getCampaignById);
-router.post("/", createCampaign);
+router.post("/", uploadCampaignImage, createCampaign);
 router.post("/:campaignId/analytics", updateCampaignAnalytics);
 router.post("/clips", addClip);
 
