@@ -2,10 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import axios from "../api/axios";
 
 const EditProfile = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const [profile, setProfile] = useState({
     name: "",
@@ -17,14 +21,17 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (user) {
+      const avatarUrl = user.profilePicture 
+        ? `http://localhost:5001${user.profilePicture}`
+        : user.image ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=4f46e5&color=fff`;
+      
       setProfile({
         name: user.name || user.email?.split("@")[0] || "",
         username: user.username || user.name || user.email?.split("@")[0] || "",
         bio: user.bio || "",
         email: user.email || "",
-        avatar:
-          user.image ||
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=4f46e5&color=fff`,
+        avatar: avatarUrl,
       });
     }
   }, [user]);
@@ -37,23 +44,69 @@ const EditProfile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setError("Please upload an image file");
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image size should be less than 5MB");
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       setProfile({ ...profile, avatar: imageUrl });
+      setUploadedFile(file);
+      setError("");
     }
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    const updated = {
-      ...user,
-      name: profile.name,
-      username: profile.username,
-      bio: profile.bio,
-      image: profile.avatar,
-    };
-    setUser(updated);
-    localStorage.setItem("user", JSON.stringify(updated));
-    navigate("/profile");
+    setError("");
+    setLoading(true);
+
+    try {
+      // Upload profile picture if a new one was selected
+      if (uploadedFile) {
+        const formData = new FormData();
+        formData.append("profilePicture", uploadedFile);
+
+        const uploadResponse = await axios.post("/api/auth/profile-picture", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        // Update user context with new profile picture
+        const updatedUser = {
+          ...user,
+          profilePicture: uploadResponse.data.user.profilePicture,
+        };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
+      // Note: For name, username, bio updates, you would need additional API endpoints
+      // For now, just updating locally
+      const updated = {
+        ...user,
+        name: profile.name,
+        username: profile.username,
+        bio: profile.bio,
+      };
+      setUser(updated);
+      localStorage.setItem("user", JSON.stringify(updated));
+      
+      navigate("/profile");
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      setError(err.response?.data?.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,6 +126,12 @@ const EditProfile = () => {
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
           Edit Profile
         </h2>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSave} className="space-y-5">
           {/* Avatar Upload */}
@@ -155,14 +214,23 @@ const EditProfile = () => {
               type="button"
               onClick={() => navigate("/profile")}
               className="px-5 py-2 border rounded-lg font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition"
+              className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={loading}
             >
-              Save Changes
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
           </div>
         </form>

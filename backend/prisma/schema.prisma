@@ -19,6 +19,7 @@ model User {
   email       String   @unique
   password    String
   currentRole String   @default("clipper") // 'clipper' | 'creator' - currently active role
+  profilePicture String?  // Path to profile picture
   createdAt   DateTime @default(now())
 
   jobs        Job[]
@@ -76,6 +77,7 @@ model Campaign {
   creatorId   Int
   name        String
   description String?
+  thumbnail   String?  // Path to campaign thumbnail
   budget      Float
   totalSpent  Float    @default(0)
   startDate   DateTime @default(now())

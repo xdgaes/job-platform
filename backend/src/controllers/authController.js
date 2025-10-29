@@ -103,3 +103,53 @@ export const switchRole = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// ✅ UPDATE PROFILE PICTURE
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const userId = req.user.id; // From auth middleware
+    
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const profilePicture = `/uploads/profiles/${req.file.filename}`;
+
+    // Update user's profile picture
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { profilePicture },
+      select: { id: true, name: true, email: true, currentRole: true, profilePicture: true }
+    });
+
+    res.json({
+      message: "Profile picture updated successfully",
+      user: updatedUser
+    });
+  } catch (err) {
+    console.error("Update profile picture error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ✅ GET USER PROFILE
+export const getProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // From auth middleware
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, currentRole: true, profilePicture: true, createdAt: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    console.error("Get profile error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

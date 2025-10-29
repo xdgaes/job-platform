@@ -94,6 +94,9 @@ export const getCampaignById = async (req, res) => {
 export const createCampaign = async (req, res) => {
   try {
     const { creatorId, name, description, budget } = req.body;
+    
+    // Get thumbnail path if file was uploaded
+    const thumbnail = req.file ? `/uploads/campaigns/${req.file.filename}` : null;
 
     const campaign = await prisma.campaign.create({
       data: {
@@ -101,6 +104,7 @@ export const createCampaign = async (req, res) => {
         name,
         description,
         budget: parseFloat(budget),
+        thumbnail,
       },
       include: {
         analytics: true,
