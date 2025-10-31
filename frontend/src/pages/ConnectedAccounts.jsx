@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
-import axios from "axios";
+import axios from "../api/axios";
 import { Youtube, Instagram, Award, Link2, CheckCircle, Plus, X, ExternalLink } from "lucide-react";
 
 const platformConfig = {
@@ -53,8 +53,8 @@ function ConnectedAccounts() {
   const fetchAccounts = async () => {
     try {
       const [accountsRes, availableRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/connected-accounts/user/${user.id}`),
-        axios.get(`http://localhost:5000/api/connected-accounts/user/${user.id}/available`),
+        axios.get(`/connected-accounts/user/${user.id}`),
+        axios.get(`/connected-accounts/user/${user.id}/available`),
       ]);
       
       setConnectedAccounts(accountsRes.data);
@@ -76,7 +76,7 @@ function ConnectedAccounts() {
     e.preventDefault();
     
     try {
-      await axios.post("http://localhost:5000/api/connected-accounts", {
+      await axios.post("/connected-accounts", {
         userId: user.id,
         platform: selectedPlatform,
         username: formData.username,
@@ -95,7 +95,7 @@ function ConnectedAccounts() {
     if (!confirm("Are you sure you want to disconnect this account?")) return;
     
     try {
-      await axios.delete(`http://localhost:5000/api/connected-accounts/${accountId}`);
+      await axios.delete(`/connected-accounts/${accountId}`);
       fetchAccounts();
     } catch (error) {
       console.error("Error disconnecting account:", error);

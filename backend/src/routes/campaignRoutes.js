@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAllCampaigns,
   getCampaigns,
   getCampaignById,
   createCampaign,
@@ -10,6 +11,7 @@ import { uploadCampaignImage } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
+router.get("/", getAllCampaigns);
 router.get("/user/:userId", getCampaigns);
 router.get("/:campaignId", getCampaignById);
 router.post("/", uploadCampaignImage, createCampaign);

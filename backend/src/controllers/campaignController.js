@@ -2,6 +2,39 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Get all campaigns (public view for home page)
+export const getAllCampaigns = async (req, res) => {
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      where: { status: 'active' },
+      include: {
+        analytics: true,
+        clips: {
+          select: {
+            id: true,
+            views: true,
+            clipperId: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Calculate additional metrics for each campaign
+    const campaignsWithMetrics = campaigns.map(campaign => ({
+      ...campaign,
+      participants: new Set(campaign.clips.map(c => c.clipperId)).size,
+      totalViews: campaign.analytics?.totalViews || 0,
+      progress: campaign.budget > 0 ? Math.min(100, (campaign.totalSpent / campaign.budget) * 100) : 0,
+    }));
+
+    res.json(campaignsWithMetrics);
+  } catch (error) {
+    console.error("Error fetching all campaigns:", error);
+    res.status(500).json({ error: "Failed to fetch campaigns" });
+  }
+};
+
 // Get all campaigns for a user
 export const getCampaigns = async (req, res) => {
   try {
