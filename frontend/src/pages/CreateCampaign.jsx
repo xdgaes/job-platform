@@ -77,7 +77,7 @@ const CreateCampaign = () => {
         data.append("thumbnail", formData.thumbnail);
       }
 
-      const response = await axios.post("/api/campaigns", data, {
+      const response = await axios.post("/campaigns", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

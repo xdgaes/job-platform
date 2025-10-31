@@ -23,7 +23,7 @@ const Home = () => {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/campaigns");
+      const response = await axios.get("/campaigns");
       setCampaigns(response.data);
       setError(null);
     } catch (err) {
