@@ -27,6 +27,7 @@ model User {
   wallet       Wallet?
   campaigns    Campaign[]
   connectedAccounts ConnectedAccount[]
+  campaignFeedback CampaignFeedback[]
 }
 
 model Job {
@@ -76,10 +77,18 @@ model Campaign {
   id          Int      @id @default(autoincrement())
   creatorId   Int
   name        String
+  title       String   @default("")
   description String?
+  videoLink   String?
   thumbnail   String?  // Path to campaign thumbnail
   budget      Float
   totalSpent  Float    @default(0)
+  flatBudgetAmount        Float   @default(0)
+  flatBudgetViews         Int     @default(0)
+  performanceBudgetAmount Float   @default(0)
+  performanceBudgetViews  Int     @default(0)
+  platforms               String[] @default([])
+  estimatedViews          Int     @default(0)
   startDate   DateTime @default(now())
   endDate     DateTime?
   status      String   @default("active") // 'active' | 'paused' | 'completed'
@@ -89,6 +98,7 @@ model Campaign {
   creator     User     @relation(fields: [creatorId], references: [id])
   clips       Clip[]
   analytics   CampaignAnalytics?
+  feedback    CampaignFeedback[]
 }
 
 model Clip {
@@ -139,4 +149,20 @@ model ConnectedAccount {
   user        User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, platform])
+}
+
+model CampaignFeedback {
+  id         Int      @id @default(autoincrement())
+  campaignId Int
+  userId     Int
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([campaignId])
+  @@index([userId])
 }
