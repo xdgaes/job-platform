@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Leaderboard from "./pages/Leaderboard";
-import Analytics from "./pages/Analytics";
+import CampaignDetails from "./pages/CampaignDetails";
 import ConnectedAccounts from "./pages/ConnectedAccounts";
 import Wallet from "./pages/Wallet";
 import CreateCampaign from "./pages/CreateCampaign";
@@ -20,7 +20,14 @@ import PrivateRoute from "./components/PrivateRoute";
 // Wrapper untuk memeriksa route saat ini
 function AppWrapper() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/profile" || location.pathname === "/edit-profile" || location.pathname === "/analytics" || location.pathname === "/connected-accounts" || location.pathname === "/wallet" || location.pathname === "/create-campaign";
+  const routesWithoutNavbar = [
+    "/profile",
+    "/edit-profile",
+    "/connected-accounts",
+    "/wallet",
+    "/create-campaign",
+  ];
+  const hideNavbar = routesWithoutNavbar.includes(location.pathname);
 
   // Ambil darkMode dari ThemeContext
   const { darkMode } = useContext(ThemeContext);
@@ -62,10 +69,10 @@ function AppWrapper() {
             }
           />
           <Route
-            path="/analytics"
+            path="/campaigns/:campaignId"
             element={
               <PrivateRoute>
-                <Analytics />
+                <CampaignDetails />
               </PrivateRoute>
             }
           />
