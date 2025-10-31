@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
-import axios from "axios";
+import axios from "../api/axios";
 import {
   Wallet as WalletIcon,
   TrendingUp,
@@ -34,7 +34,7 @@ function Wallet() {
 
   const fetchWallet = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/wallet/${user.id}`);
+      const response = await axios.get(`/wallet/${user.id}`);
       setWallet(response.data);
       setLoading(false);
     } catch (error) {
@@ -52,7 +52,7 @@ function Wallet() {
     }
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/wallet/${user.id}/add`, {
+      const response = await axios.post(`/wallet/${user.id}/add`, {
         amount: parseFloat(amount),
         description: description || "Funds added",
       });
@@ -81,7 +81,7 @@ function Wallet() {
     }
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/wallet/${user.id}/withdraw`, {
+      const response = await axios.post(`/wallet/${user.id}/withdraw`, {
         amount: parseFloat(amount),
         description: description || "Funds withdrawn",
       });

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
-import axios from "axios";
+import axios from "../api/axios";
 import { 
   TrendingUp, 
   Users, 
@@ -21,6 +21,7 @@ import {
 
 function Analytics() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useContext(AuthContext);
   const { darkMode } = useContext(ThemeContext);
   const [campaigns, setCampaigns] = useState([]);
@@ -44,9 +45,14 @@ function Analytics() {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/campaigns/user/${user.id}`);
+      const response = await axios.get(`/campaigns/user/${user.id}`);
       setCampaigns(response.data);
-      if (response.data.length > 0) {
+      
+      // Check if campaign ID is in URL query params
+      const campaignIdFromUrl = searchParams.get('campaign');
+      if (campaignIdFromUrl) {
+        setSelectedCampaign(parseInt(campaignIdFromUrl));
+      } else if (response.data.length > 0) {
         setSelectedCampaign(response.data[0].id);
       }
       setLoading(false);
@@ -70,7 +76,7 @@ function Analytics() {
       }
 
       const response = await axios.get(
-        `http://localhost:5000/api/campaigns/${selectedCampaign}`,
+        `/campaigns/${selectedCampaign}`,
         { params }
       );
       setCampaignData(response.data);
