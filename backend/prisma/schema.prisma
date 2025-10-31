@@ -27,6 +27,7 @@ model User {
   wallet       Wallet?
   campaigns    Campaign[]
   connectedAccounts ConnectedAccount[]
+  campaignFeedback CampaignFeedback[]
 }
 
 model Job {
@@ -97,6 +98,7 @@ model Campaign {
   creator     User     @relation(fields: [creatorId], references: [id])
   clips       Clip[]
   analytics   CampaignAnalytics?
+  feedback    CampaignFeedback[]
 }
 
 model Clip {
@@ -147,4 +149,20 @@ model ConnectedAccount {
   user        User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, platform])
+}
+
+model CampaignFeedback {
+  id         Int      @id @default(autoincrement())
+  campaignId Int
+  userId     Int
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([campaignId])
+  @@index([userId])
 }

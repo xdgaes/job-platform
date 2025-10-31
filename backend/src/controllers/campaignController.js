@@ -217,6 +217,58 @@ export const createCampaign = async (req, res) => {
   }
 };
 
+// Submit feedback after campaign creation
+export const createCampaignFeedback = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const { rating, comment } = req.body;
+
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const parsedCampaignId = parseInt(campaignId, 10);
+    const parsedRating = parseInt(rating, 10);
+
+    if (!Number.isInteger(parsedCampaignId) || parsedCampaignId <= 0) {
+      return res.status(400).json({ error: "Invalid campaign identifier" });
+    }
+
+    if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      return res.status(400).json({ error: "Rating must be an integer between 1 and 5" });
+    }
+
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: parsedCampaignId },
+      select: { creatorId: true },
+    });
+
+    if (!campaign) {
+      return res.status(404).json({ error: "Campaign not found" });
+    }
+
+    if (campaign.creatorId !== req.user.id) {
+      return res.status(403).json({ error: "You are not authorized to review this campaign" });
+    }
+
+    const sanitizedComment = (comment || "").trim();
+
+    const feedback = await prisma.campaignFeedback.create({
+      data: {
+        campaignId: parsedCampaignId,
+        userId: req.user.id,
+        rating: parsedRating,
+        comment: sanitizedComment.length > 0 ? sanitizedComment : null,
+      },
+    });
+
+    res.status(201).json({ message: "Feedback submitted", feedback });
+  } catch (error) {
+    console.error("Error submitting campaign feedback:", error);
+    res.status(500).json({ error: "Failed to submit feedback" });
+  }
+};
+
 // Update campaign analytics (called when clips are added/updated)
 export const updateCampaignAnalytics = async (req, res) => {
   try {

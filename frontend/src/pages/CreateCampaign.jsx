@@ -39,6 +39,8 @@ const CreateCampaign = () => {
   const [reviewError, setReviewError] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
+  const [createdCampaignId, setCreatedCampaignId] = useState(null);
+
   const [formData, setFormData] = useState({
     campaignName: "",
     title: "",
@@ -293,6 +295,7 @@ const CreateCampaign = () => {
       });
 
       if (response.status === 201) {
+        setCreatedCampaignId(response.data?.id || null);
         setShowSuccessModal(true);
       }
     } catch (err) {
@@ -318,6 +321,15 @@ const CreateCampaign = () => {
     setReviewError("");
   };
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setReviewError("");
+    setCreatedCampaignId(null);
+    setRating(0);
+    setHoverRating(0);
+    setReviewComment("");
+  };
+
   const handleReviewSubmit = async (event) => {
     event.preventDefault();
     if (rating === 0) {
@@ -325,16 +337,31 @@ const CreateCampaign = () => {
       return;
     }
 
+    if (!createdCampaignId) {
+      setReviewError("Unable to determine the submitted campaign. Please refresh and try again.");
+      return;
+    }
+
     setReviewSubmitting(true);
 
     try {
-      // Placeholder for future submission endpoint
-      await new Promise((resolve) => setTimeout(resolve, 400));
+      const payload = {
+        rating,
+        comment: reviewComment.trim(),
+      };
+
+      await axios.post(`/campaigns/${createdCampaignId}/feedback`, payload);
+
       setShowSuccessModal(false);
+      setRating(0);
+      setHoverRating(0);
+      setReviewComment("");
+      setCreatedCampaignId(null);
       navigate("/");
     } catch (submitError) {
       console.error("Error submitting review:", submitError);
-      setReviewError("Failed to submit feedback. Please try again.");
+      const message = submitError.response?.data?.error || "Failed to submit feedback. Please try again.";
+      setReviewError(message);
     } finally {
       setReviewSubmitting(false);
     }
@@ -666,7 +693,7 @@ const CreateCampaign = () => {
 
             <button
               type="button"
-              onClick={() => setShowSuccessModal(false)}
+              onClick={handleCloseSuccessModal}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               aria-label="Close confirmation"
             >
