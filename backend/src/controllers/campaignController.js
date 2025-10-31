@@ -75,6 +75,14 @@ export const getCampaignById = async (req, res) => {
       where: { id: parseInt(campaignId) },
       include: {
         analytics: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            profilePicture: true,
+            email: true,
+          },
+        },
         clips: {
           where: startDate && endDate ? {
             createdAt: {

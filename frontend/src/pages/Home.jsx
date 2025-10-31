@@ -168,7 +168,7 @@ const Home = () => {
                   <div
                     key={campaign.id}
                     className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer"
-                    onClick={() => navigate(`/analytics?campaign=${campaign.id}`)}
+                    onClick={() => navigate(`/campaigns/${campaign.id}`)}
                   >
                     <img
                       src={campaign.thumbnail || `https://via.placeholder.com/400x200.png?text=${encodeURIComponent(displayTitle)}`}
