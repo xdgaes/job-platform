@@ -76,10 +76,18 @@ model Campaign {
   id          Int      @id @default(autoincrement())
   creatorId   Int
   name        String
+  title       String   @default("")
   description String?
+  videoLink   String?
   thumbnail   String?  // Path to campaign thumbnail
   budget      Float
   totalSpent  Float    @default(0)
+  flatBudgetAmount        Float   @default(0)
+  flatBudgetViews         Int     @default(0)
+  performanceBudgetAmount Float   @default(0)
+  performanceBudgetViews  Int     @default(0)
+  platforms               String[] @default([])
+  estimatedViews          Int     @default(0)
   startDate   DateTime @default(now())
   endDate     DateTime?
   status      String   @default("active") // 'active' | 'paused' | 'completed'

@@ -126,18 +126,77 @@ export const getCampaignById = async (req, res) => {
 // Create a new campaign
 export const createCampaign = async (req, res) => {
   try {
-    const { creatorId, name, description, budget } = req.body;
-    
+    const {
+      creatorId,
+      name,
+      title,
+      description,
+      videoLink,
+      flatBudgetAmount,
+      flatBudgetViews,
+      performanceBudgetAmount,
+      performanceBudgetViews,
+      estimatedViews,
+      platforms,
+      endDate,
+      hasEndDate,
+    } = req.body;
+
+    const sanitizedName = (name || "").trim();
+    const sanitizedTitle = (title || "").trim();
+    const sanitizedDescription = (description || "").trim();
+
+    if (!creatorId || !sanitizedName || !sanitizedTitle || !sanitizedDescription) {
+      return res.status(400).json({ error: "Missing required campaign fields" });
+    }
+
+    const parsedCreatorId = parseInt(creatorId, 10);
+    const parsedFlatBudgetAmount = parseFloat(flatBudgetAmount) || 0;
+    const parsedFlatBudgetViews = parseInt(flatBudgetViews, 10) || 0;
+    const parsedPerformanceBudgetAmount = parseFloat(performanceBudgetAmount) || 0;
+    const parsedPerformanceBudgetViews = parseInt(performanceBudgetViews, 10) || 0;
+    const computedTotalBudget = parsedFlatBudgetAmount + parsedPerformanceBudgetAmount;
+    const parsedEstimatedViewsFromClient = parseInt(estimatedViews, 10);
+    const computedEstimatedViews = Number.isFinite(parsedEstimatedViewsFromClient)
+      ? parsedEstimatedViewsFromClient
+      : parsedFlatBudgetViews + parsedPerformanceBudgetViews;
+
+    let parsedPlatforms = [];
+    if (platforms) {
+      try {
+        const candidate = JSON.parse(platforms);
+        if (Array.isArray(candidate)) {
+          const allowedPlatforms = ["instagram", "youtube", "tiktok"];
+          parsedPlatforms = candidate
+            .map((p) => (typeof p === "string" ? p.toLowerCase() : ""))
+            .filter((p) => allowedPlatforms.includes(p));
+        }
+      } catch (parseError) {
+        console.warn("Failed to parse platforms payload", parseError);
+      }
+    }
+
+    const shouldSetEndDate = hasEndDate === true || hasEndDate === "true";
+
     // Get thumbnail path if file was uploaded
     const thumbnail = req.file ? `/uploads/campaigns/${req.file.filename}` : null;
 
     const campaign = await prisma.campaign.create({
       data: {
-        creatorId: parseInt(creatorId),
-        name,
-        description,
-        budget: parseFloat(budget),
+        creatorId: parsedCreatorId,
+        name: sanitizedName,
+        title: sanitizedTitle || sanitizedName,
+        description: sanitizedDescription,
+        videoLink: (videoLink || "").trim() || null,
         thumbnail,
+        budget: computedTotalBudget,
+        flatBudgetAmount: parsedFlatBudgetAmount,
+        flatBudgetViews: parsedFlatBudgetViews,
+        performanceBudgetAmount: parsedPerformanceBudgetAmount,
+        performanceBudgetViews: parsedPerformanceBudgetViews,
+        estimatedViews: computedEstimatedViews,
+        platforms: parsedPlatforms,
+        endDate: shouldSetEndDate && endDate ? new Date(endDate) : null,
       },
       include: {
         analytics: true,

@@ -122,6 +122,17 @@ function Analytics() {
   }
 
   const platformPercentages = calculatePlatformPercentages();
+  const campaignTitle = campaignData?.title || campaignData?.name || "";
+  const internalCampaignName = campaignData?.title && campaignData?.name ? campaignData.name : "";
+  const campaignPlatforms = Array.isArray(campaignData?.platforms) ? campaignData.platforms : [];
+  const estimatedCampaignViews = typeof campaignData?.estimatedViews === "number" ? campaignData.estimatedViews : null;
+  const flatBudgetAmount = typeof campaignData?.flatBudgetAmount === "number" ? campaignData.flatBudgetAmount : null;
+  const performanceBudgetAmount = typeof campaignData?.performanceBudgetAmount === "number" ? campaignData.performanceBudgetAmount : null;
+
+  const formatPlatformLabel = (value) => {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -139,7 +150,7 @@ function Analytics() {
             >
               {campaigns.map((campaign) => (
                 <option key={campaign.id} value={campaign.id}>
-                  {campaign.name}
+                  {campaign.name || campaign.title}
                 </option>
               ))}
             </select>
@@ -176,7 +187,10 @@ function Analytics() {
         <>
           {/* Campaign Info Card */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 mb-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">{campaignData.name}</h2>
+            <h2 className="text-2xl font-bold mb-1">{campaignTitle}</h2>
+            {internalCampaignName && (
+              <p className="text-sm text-indigo-200 mb-2">Internal name: {internalCampaignName}</p>
+            )}
             {campaignData.description && (
               <p className="text-indigo-100 mb-4">{campaignData.description}</p>
             )}
@@ -200,6 +214,53 @@ function Analytics() {
                 <p className="text-2xl font-bold capitalize">{campaignData.status}</p>
               </div>
             </div>
+
+            <div className="flex flex-wrap gap-4 mt-4">
+              {flatBudgetAmount !== null && (
+                <div className="px-4 py-2 rounded-lg bg-white/15">
+                  <p className="text-xs uppercase tracking-wide text-indigo-100">Flat Budget</p>
+                  <p className="text-lg font-semibold">${flatBudgetAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+              )}
+              {performanceBudgetAmount !== null && performanceBudgetAmount > 0 && (
+                <div className="px-4 py-2 rounded-lg bg-white/15">
+                  <p className="text-xs uppercase tracking-wide text-indigo-100">Performance Budget</p>
+                  <p className="text-lg font-semibold">${performanceBudgetAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+              )}
+              {estimatedCampaignViews !== null && (
+                <div className="px-4 py-2 rounded-lg bg-white/15">
+                  <p className="text-xs uppercase tracking-wide text-indigo-100">Estimated Views</p>
+                  <p className="text-lg font-semibold">{estimatedCampaignViews.toLocaleString()}</p>
+                </div>
+              )}
+            </div>
+
+            {campaignPlatforms.length > 0 && (
+              <div className="mt-4">
+                <p className="text-xs uppercase tracking-wide text-indigo-100 mb-2">Platforms</p>
+                <div className="flex flex-wrap gap-2">
+                  {campaignPlatforms.map((platform) => (
+                    <span key={platform} className="px-3 py-1 rounded-full bg-white/15 text-sm font-medium">
+                      {formatPlatformLabel(platform)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {campaignData.videoLink && (
+              <div className="mt-4">
+                <a
+                  href={campaignData.videoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition"
+                >
+                  View Reference Video
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Analytics Stats */}
