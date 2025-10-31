@@ -126,18 +126,77 @@ export const getCampaignById = async (req, res) => {
 // Create a new campaign
 export const createCampaign = async (req, res) => {
   try {
-    const { creatorId, name, description, budget } = req.body;
-    
+    const {
+      creatorId,
+      name,
+      title,
+      description,
+      videoLink,
+      flatBudgetAmount,
+      flatBudgetViews,
+      performanceBudgetAmount,
+      performanceBudgetViews,
+      estimatedViews,
+      platforms,
+      endDate,
+      hasEndDate,
+    } = req.body;
+
+    const sanitizedName = (name || "").trim();
+    const sanitizedTitle = (title || "").trim();
+    const sanitizedDescription = (description || "").trim();
+
+    if (!creatorId || !sanitizedName || !sanitizedTitle || !sanitizedDescription) {
+      return res.status(400).json({ error: "Missing required campaign fields" });
+    }
+
+    const parsedCreatorId = parseInt(creatorId, 10);
+    const parsedFlatBudgetAmount = parseFloat(flatBudgetAmount) || 0;
+    const parsedFlatBudgetViews = parseInt(flatBudgetViews, 10) || 0;
+    const parsedPerformanceBudgetAmount = parseFloat(performanceBudgetAmount) || 0;
+    const parsedPerformanceBudgetViews = parseInt(performanceBudgetViews, 10) || 0;
+    const computedTotalBudget = parsedFlatBudgetAmount + parsedPerformanceBudgetAmount;
+    const parsedEstimatedViewsFromClient = parseInt(estimatedViews, 10);
+    const computedEstimatedViews = Number.isFinite(parsedEstimatedViewsFromClient)
+      ? parsedEstimatedViewsFromClient
+      : parsedFlatBudgetViews + parsedPerformanceBudgetViews;
+
+    let parsedPlatforms = [];
+    if (platforms) {
+      try {
+        const candidate = JSON.parse(platforms);
+        if (Array.isArray(candidate)) {
+          const allowedPlatforms = ["instagram", "youtube", "tiktok"];
+          parsedPlatforms = candidate
+            .map((p) => (typeof p === "string" ? p.toLowerCase() : ""))
+            .filter((p) => allowedPlatforms.includes(p));
+        }
+      } catch (parseError) {
+        console.warn("Failed to parse platforms payload", parseError);
+      }
+    }
+
+    const shouldSetEndDate = hasEndDate === true || hasEndDate === "true";
+
     // Get thumbnail path if file was uploaded
     const thumbnail = req.file ? `/uploads/campaigns/${req.file.filename}` : null;
 
     const campaign = await prisma.campaign.create({
       data: {
-        creatorId: parseInt(creatorId),
-        name,
-        description,
-        budget: parseFloat(budget),
+        creatorId: parsedCreatorId,
+        name: sanitizedName,
+        title: sanitizedTitle || sanitizedName,
+        description: sanitizedDescription,
+        videoLink: (videoLink || "").trim() || null,
         thumbnail,
+        budget: computedTotalBudget,
+        flatBudgetAmount: parsedFlatBudgetAmount,
+        flatBudgetViews: parsedFlatBudgetViews,
+        performanceBudgetAmount: parsedPerformanceBudgetAmount,
+        performanceBudgetViews: parsedPerformanceBudgetViews,
+        estimatedViews: computedEstimatedViews,
+        platforms: parsedPlatforms,
+        endDate: shouldSetEndDate && endDate ? new Date(endDate) : null,
       },
       include: {
         analytics: true,
@@ -155,6 +214,58 @@ export const createCampaign = async (req, res) => {
   } catch (error) {
     console.error("Error creating campaign:", error);
     res.status(500).json({ error: "Failed to create campaign" });
+  }
+};
+
+// Submit feedback after campaign creation
+export const createCampaignFeedback = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const { rating, comment } = req.body;
+
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const parsedCampaignId = parseInt(campaignId, 10);
+    const parsedRating = parseInt(rating, 10);
+
+    if (!Number.isInteger(parsedCampaignId) || parsedCampaignId <= 0) {
+      return res.status(400).json({ error: "Invalid campaign identifier" });
+    }
+
+    if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      return res.status(400).json({ error: "Rating must be an integer between 1 and 5" });
+    }
+
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: parsedCampaignId },
+      select: { creatorId: true },
+    });
+
+    if (!campaign) {
+      return res.status(404).json({ error: "Campaign not found" });
+    }
+
+    if (campaign.creatorId !== req.user.id) {
+      return res.status(403).json({ error: "You are not authorized to review this campaign" });
+    }
+
+    const sanitizedComment = (comment || "").trim();
+
+    const feedback = await prisma.campaignFeedback.create({
+      data: {
+        campaignId: parsedCampaignId,
+        userId: req.user.id,
+        rating: parsedRating,
+        comment: sanitizedComment.length > 0 ? sanitizedComment : null,
+      },
+    });
+
+    res.status(201).json({ message: "Feedback submitted", feedback });
+  } catch (error) {
+    console.error("Error submitting campaign feedback:", error);
+    res.status(500).json({ error: "Failed to submit feedback" });
   }
 };
 
