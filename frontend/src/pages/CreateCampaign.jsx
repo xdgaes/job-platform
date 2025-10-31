@@ -12,6 +12,7 @@ import {
   Type,
   AlignLeft,
   Eye,
+  Star,
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "../api/axios";
@@ -31,6 +32,12 @@ const CreateCampaign = () => {
   const [error, setError] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     campaignName: "",
@@ -70,6 +77,11 @@ const CreateCampaign = () => {
   const handleTextChange = (field) => (event) => {
     setFormData((prev) => ({ ...prev, [field]: event.target.value }));
     setError("");
+  };
+
+  const handleReviewCommentChange = (event) => {
+    setReviewComment(event.target.value);
+    setReviewError("");
   };
 
   const validateAndSetThumbnail = (file) => {
@@ -281,13 +293,50 @@ const CreateCampaign = () => {
       });
 
       if (response.status === 201) {
-        navigate("/analytics");
+        setShowSuccessModal(true);
       }
     } catch (err) {
       console.error("Error creating campaign:", err);
       setError(err.response?.data?.error || "Failed to create campaign");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const displayedRating = hoverRating || rating;
+
+  const handleStarEnter = (value) => {
+    setHoverRating(value);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handleStarClick = (value) => {
+    setRating(value);
+    setReviewError("");
+  };
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+    if (rating === 0) {
+      setReviewError("Please rate your experience before submitting.");
+      return;
+    }
+
+    setReviewSubmitting(true);
+
+    try {
+      // Placeholder for future submission endpoint
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      setShowSuccessModal(false);
+      navigate("/");
+    } catch (submitError) {
+      console.error("Error submitting review:", submitError);
+      setReviewError("Failed to submit feedback. Please try again.");
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
@@ -604,6 +653,86 @@ const CreateCampaign = () => {
           </div>
         </form>
       </div>
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="relative w-full max-w-xl rounded-2xl bg-white dark:bg-gray-900 shadow-2xl p-8">
+            <div className="absolute top-6 left-6 flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-lg tracking-tight">
+                C
+              </div>
+              <span className="text-xl font-semibold text-gray-800 dark:text-gray-100">Clippa</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Close confirmation"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="mt-16 text-center space-y-4">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Submission Complete</h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                Thank you for sharing your campaign. Help us improve Clippa by leaving a quick review.
+              </p>
+
+              <form onSubmit={handleReviewSubmit} className="space-y-6 mt-6">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">How was your setup experience?</p>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onMouseEnter={() => handleStarEnter(value)}
+                        onMouseLeave={handleStarLeave}
+                        onClick={() => handleStarClick(value)}
+                        className="transition-transform duration-150 hover:scale-110 focus:outline-none"
+                        aria-label={`${value} star${value > 1 ? "s" : ""}`}
+                      >
+                        <Star
+                          className={`h-10 w-10 ${displayedRating >= value ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+                          fill={displayedRating >= value ? "currentColor" : "none"}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Help review Clippa (optional)
+                  </label>
+                  <textarea
+                    value={reviewComment}
+                    onChange={handleReviewCommentChange}
+                    rows={4}
+                    placeholder="Share any feedback or suggestions..."
+                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
+                  />
+                </div>
+
+                {reviewError && (
+                  <p className="text-sm text-red-600 dark:text-red-400 text-center">{reviewError}</p>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitting}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {reviewSubmitting ? "Submitting..." : "Submit & Return Home"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
